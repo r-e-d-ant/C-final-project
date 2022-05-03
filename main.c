@@ -35,6 +35,10 @@ int main()
 	int c;
 	c = 0;
 
+	printf("\n========================================");
+	printf("\n| PATIENT APPOINTMENT TO DOCTOR SYSTEM |\n");
+	printf("========================================\n");
+
 	do
 	{
 		printf("\nEnter:\n[1]. Record\n[2]. Display\n[3]. Update\n[4]. Search\n[5]. Delete\n[0]. Exit\n: > ");
