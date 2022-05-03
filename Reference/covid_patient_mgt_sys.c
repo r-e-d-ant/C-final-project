@@ -8,7 +8,7 @@ void deletePatient();
 
 struct Patient
 {
-	char name[20], sex[5];
+	char name[20], sex[10];
 	int age;
 } p[5];
 
@@ -49,7 +49,7 @@ void displayPatients()
 // Update patient function
 void updatePatient()
 {
-	char pName[20], newSex[5];
+	char pName[20], newSex[10];
 	int i, newAge;
 
 	printf("Enter patient Name: ");
