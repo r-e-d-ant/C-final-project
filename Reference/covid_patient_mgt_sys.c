@@ -26,10 +26,13 @@ struct Patient
 
 // tot variable to keep track of the amount of the patient
 int tot = 0;
+FILE *fptr;
 
 // record Patient function
 void recordPatient()
 {
+	fptr = fopen("covid_pat.txt", "a");
+
 	printf("\nEnter \n");
 
 	printf("\nName: ");
@@ -41,6 +44,9 @@ void recordPatient()
 	printf("\nSex: ");
 	scanf("%s", p[tot].sex);
 
+	fprintf(fptr, "%s\n%d\n%s\n", p[tot].name, p[tot].age, p[tot].sex);
+	fclose(fptr);
+
 	tot++; // increase the amount of the patient when one patient is added
 }
 
@@ -49,6 +55,11 @@ void displayPatients()
 {
 
 	int i;
+	char buff[255];
+	fptr = fopen("covid_pat.txt", "r");
+	fscanf(fptr, "%s", buff);
+	printf("%s\n", buff);
+	fclose(fptr);
 
 	printf("\nPatients records:\n");
 	printf("\nName\tAge\tSex\n====\t===\t===\n");

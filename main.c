@@ -1,33 +1,190 @@
 
+#include <stdio.h>
+#include <string.h>
 
-#include<stdio.h>
-#include<string.h>
-
-// =================== 
-
-/* Functions declation
-there are not necessary if the functions are at the top of the main function (which is the case)
-so You can remove them if you want */
-
-void recordPatient();
-void displayPatients();
-void updatePatient();
-void searchPatient();
-void deletePatient();
-
-// ===================== 
+// ================
 
 /*
-Structure Patient declare as array of 5 length
+Structure Patient
 */
 struct Patient
 {
-	char name[30], date[20], email[30];
-	int phone_no;
-} p[5];
+	char Id[20], Fname[30], Lname[30], appointmentDate[20], phone_no[20];
+} p;
 
-// tot variable to keep track of the amount of the patient
-int tot = 0;
+
+// record Patient function
+void recordPatient()
+{
+	FILE *fptr;
+
+	printf("\nEnter \n");
+
+	printf("\nNational ID: ");
+	scanf("%s", p.Id);
+
+	printf("\nFirst name: ");
+	scanf("%s", p.Fname);
+
+	printf("\nLast name: ");
+	scanf("%s", p.Lname);
+
+	printf("\nAppointment date (format: [dd/mm/yy]): ");
+	scanf("%s", p.appointmentDate);
+
+	printf("\nPhone no (ex: 25078xxxxxx): ");
+	scanf("%s", p.phone_no);
+
+	fptr = fopen("patient_appointment_records.txt", "a");
+	fprintf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+
+	fclose(fptr);
+}
+
+// Display all patients function
+void displayPatients()
+{
+	FILE *fptr;
+
+	fptr = fopen("patient_appointment_records.txt", "r");
+
+	printf("\nPatients records:\n");
+
+	while(!feof(fptr)) {
+		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+		printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+	}
+
+	fclose(fptr);
+}
+
+// Update patient function
+
+/*
+In this function there is new functions (pName, newSex, and newAge) to store
+entered new data of the patient and we will use them to replace the ones which are
+already entered.
+
+1st we check if the name is available
+if not we pass 1 to found variable
+if the patient is available
+we we will display his datas then update them
+*/
+
+void updatePatient()
+{
+	FILE *fptr;
+	FILE *fptrUpdate;
+
+	char toSearchId[20];
+	int found = 0;
+
+	printf("\nEnter patient\n");
+	printf("National ID: ");
+	scanf("%s", toSearchId);
+
+	printf("\nSearching patient with national ID: %s ...", toSearchId);
+
+	fptr = fopen("patient_appointment_records.txt", "r");
+	fptrUpdate = fopen("temp.txt", "a");
+
+	while(!feof(fptr)) {
+		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+
+		if(strcmp(p.Id, toSearchId) == 0) {
+			found = 1;
+			printf("\n\nPatient found! \n");
+			printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+			printf("\nEnter new:\n");
+
+			printf("\nNational ID: ");
+			scanf("%s", p.Id);
+
+			printf("\nFirst name: ");
+			scanf("%s", p.Fname);
+
+			printf("\nLast name: ");
+			scanf("%s", p.Lname);
+
+			printf("\nAppointment date (format: [dd/mm/yy]): ");
+			scanf("%s", p.appointmentDate);
+
+			printf("\nPhone no (ex: 25078xxxxxx): ");
+			scanf("%s", p.phone_no);
+		}
+		// adding new data in the temporary file
+		fprintf(fptrUpdate, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+	}
+
+	fclose(fptr);
+	fclose(fptrUpdate);
+
+	if(found == 1) {
+		/*
+			open again temporary file and main file
+			to copy from temporary file to the main patients family
+		*/
+		fptrUpdate = fopen("temp.txt", "r");
+		fptr = fopen("patient_appointment_records.txt", "w");
+
+		printf("\nUpdating...\n");
+
+		while(!feof(fptrUpdate)) {
+			// read from temporary file
+			fscanf(fptrUpdate, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+			// overwrite it to the main file
+			fprintf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+		}
+
+		printf("\nPatient updated succesfuly!\n");
+		
+	} else {
+		printf("\nId with %s not found check spelling\n", toSearchId);
+	}
+	remove("temp.txt");
+
+	fclose(fptr);
+	fclose(fptrUpdate);
+}
+
+// Search one patient function
+void searchPatient()
+{
+	FILE *fptr;
+
+	char toSearchId[20];
+	int found = 0;
+
+	printf("Enter patient\n");
+	printf("National ID: ");
+	scanf("%s", toSearchId);
+
+	printf("\nSearching patient with national ID: %s ...", toSearchId);
+
+	fptr = fopen("patient_appointment_records.txt", "r");
+
+	while(!feof(fptr)) {
+		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+
+		if(strcmp(p.Id, toSearchId) == 0) {
+			found = 1;
+			printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+		}
+	}
+
+	if(found == 0) {
+		printf("\nId with %s not found check spelling\n", toSearchId);
+	}
+
+	fclose(fptr);
+}
+
+// Delete patient function
+// Still don't know how to delete
+void deletePatient()
+{
+	printf("Will delete later!");
+}
 
 // Main function
 int main()
@@ -69,157 +226,6 @@ int main()
 	} while(c != 0);
 
 	printf("\n");
-}
-
-
-
-// record Patient function
-void recordPatient()
-{
-	printf("\nEnter \n");
-
-	printf("\nName: ");
-	scanf("%s", p[tot].name);
-
-	printf("\nDate (format: [dd/mm/22]): ");
-	scanf("%s", p[tot].date);
-
-	printf("\nEmail: ");
-	scanf("%s", p[tot].email);
-
-	printf("\nPhone no (ex: 25078xxxxxx): ");
-	scanf("%d", &p[tot].phone_no);
-
-	tot++; // increase the amount of the patient when one patient is added
-}
-
-// Display all patients function
-void displayPatients()
-{
-
-	int i;
-
-	printf("\nPatients records:\n");
-	printf("\nName\t\t\t\tDate\t\t\tEmail\t\t\t\tPhone\n=======\t\t\t\t======\t\t\t=======\t\t\t\t========\n");
-
-	for(i = 0; i < tot; i++) {
-		printf("%s\t\t\t\t%s\t\t\t%s\t\t\t\t%d\n", p[i].name, p[i].date, p[i].email, p[i].phone_no);
-	}
-}
-
-// Update patient function
-/*
-In this function there is new functions (pName, newSex, and newAge) to store
-entered new data of the patient and we will use them to replace the ones which are
-already entered.
-
-1st we check if the name is available
-if not we pass 1 to found variable
-if the patient is available
-we we will display his datas then update them
-*/
-void updatePatient()
-{
-	char pName[30], newDate[20], newEmail[30];
-	int i, newPhone_no, found=0;
-
-	printf("Enter patient Name: ");
-	scanf("%s", pName);
-
-	for(i = 0; i < tot; i++) {
-		if(strcmp(p[i].name, pName) == 0) {
-			found = 1; // we pass one when the name is found
-
-			printf("\nOld data: \n");
-
-			printf("\nName\t\t\t\tDate\t\t\tEmail\t\t\t\tPhone\n=======\t\t\t\t======\t\t\t=======\t\t\t\t========\n");
-			printf("%s\t\t\t\t%s\t\t\t%s\t\t\t\t%d\n", p[i].name, p[i].date, p[i].email, p[i].phone_no);
-
-			// inserting new data
-			printf("\nEnter new \n");
-
-			printf("\nName: ");
-			scanf("%s", pName);
-			// replace entered name
-			strcpy(p[i].name, pName);
-
-			// ------====------------
-
-			printf("\nDate (format: [dd/mm/22]): ");
-			scanf("%s", newDate);
-			// replace entered Date
-			strcpy(p[i].date, newDate);
-
-			// ------====------------
-
-			printf("\nEmail: ");
-			scanf("%s", newEmail);
-			// replace entered email
-			strcpy(p[i].email, newEmail);
-
-			// ------====------------
-
-			printf("\nPhone no (ex: 25078xxxxxx): ");
-			scanf("%d", &newPhone_no);
-			// replace entered new phone number
-			p[i].phone_no = newPhone_no;
-
-		}
-	}
-	// if found is still zero we tell the user that the name is not available
-	if(found == 0) {
-		printf("Patient with name %s not found! Try again", pName);
-	}
-}
-
-// Search one patient function
-void searchPatient()
-{
-	char pName[20];
-	int i, found=0;
-
-	printf("Enter patient Name: ");
-	scanf("%s", pName);
-
-	for(i = 0; i < tot; i++) {
-		if(strcmp(p[i].name, pName) == 0) {
-			found = 1; // we pass one when the name is found
-
-			printf("\nName\t\t\t\tDate\t\t\tEmail\t\t\t\tPhone\n=======\t\t\t\t======\t\t\t=======\t\t\t\t========\n");
-			printf("%s\t\t\t\t%s\t\t\t%s\t\t\t\t%d\n", p[i].name, p[i].date, p[i].email, p[i].phone_no);
-		}
-	}
-
-	// if found is still zero we tell the user that the name is not available
-	if(found == 0) {
-		printf("Patient with name %s not found! Try again", pName);
-	}
-
-}
-
-// Delete patient function
-// Still don't know how to delete
-void deletePatient()
-{
-	char pName[20];
-	int i, found=0;
-
-	printf("Enter patient Name: ");
-	scanf("%s", pName);
-
-	for(i = 0; i < tot; i++) {
-		if(strcmp(p[i].name, pName) == 0) {
-			found = 1;
-			printf("\nOops!\n");
-			printf("The patient is inside and the program can't remove him/her\n");
-
-		}
-	}
-
-	if(found == 0) {
-		printf("Patient with name %s not found! Try again", pName);
-	}
-
 }
 
 
