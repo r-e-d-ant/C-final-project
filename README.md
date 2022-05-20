@@ -10,7 +10,7 @@ In this Project we will develop a Hospital management system, Where people can m
 ## Features in our Program
 
 ```
-• Add patient informations (Names, Phone number, appointment date and hours, and type of doctor he/she want)
+• Add patient informations (Names, Date, Email, Phone number)
 • Display patients by choosing categories(all, unserved, served)
 • Update unserved patient informartions
 • Delete patient(wheter he is unserved or served)
