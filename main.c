@@ -19,7 +19,7 @@ void recordPatient()
 {
 	FILE *fptr;
 
-	// Prompt to ask for patient information
+	// Ask for patient information
 	printf("\nEnter \n");
 
 	printf("\nNational ID: ");
