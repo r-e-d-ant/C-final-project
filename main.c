@@ -39,6 +39,8 @@ void recordPatient()
 	fprintf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 
 	fclose(fptr);
+
+	printf("\nPatient recorded succesfuly!\n");
 }
 
 // Display all patients function
@@ -48,7 +50,7 @@ void displayPatients()
 
 	fptr = fopen("patient_appointment_records.txt", "r");
 
-	printf("\nPatients records:\n");
+	printf("\nPatients records:\n\n");
 
 	while(!feof(fptr)) {
 		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
@@ -93,7 +95,7 @@ void updatePatient()
 
 		if(strcmp(p.Id, toSearchId) == 0) {
 			found = 1;
-			printf("\n\nPatient found! \n");
+			printf("\n\nPatient found!\n\n");
 			printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 			printf("\nEnter new:\n");
 
@@ -155,11 +157,11 @@ void searchPatient()
 	char toSearchId[20];
 	int found = 0;
 
-	printf("Enter patient\n");
+	printf("\nEnter patient\n");
 	printf("National ID: ");
 	scanf("%s", toSearchId);
 
-	printf("\nSearching patient with national ID: %s ...", toSearchId);
+	printf("\nSearching patient with national ID: %s ...\n\n", toSearchId);
 
 	fptr = fopen("patient_appointment_records.txt", "r");
 
@@ -183,7 +185,60 @@ void searchPatient()
 // Still don't know how to delete
 void deletePatient()
 {
-	printf("Will delete later!");
+	FILE *fptr;
+	FILE *fptrNewRecord;
+
+	char toSearchId[20];
+	int found = 0;
+
+	printf("\nEnter patient\n");
+	printf("National ID: ");
+	scanf("%s", toSearchId);
+
+	printf("\nSearching patient with national ID: %s ...", toSearchId);
+
+	fptr = fopen("patient_appointment_records.txt", "r");
+	fptrNewRecord = fopen("tempNewRecord.txt", "a");
+
+	while(!feof(fptr)) {
+		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+
+		if(strcmp(p.Id, toSearchId) == 0) {
+			found = 1;
+
+			printf("\nPatient found!\n");
+			printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+			printf("\nDeleting patient...\n");
+		}
+	}
+
+	fclose(fptr);
+	fclose(fptrNewRecord);
+
+	if(found == 1) {
+
+		fptr = fopen("patient_appointment_records.txt", "r");
+		fptrNewRecord = fopen("tempNewRecord.txt", "a");
+
+		while(!feof(fptr)) {
+			fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+
+			if(strcmp(p.Id, toSearchId) != 0) {
+				fprintf(fptrNewRecord, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+			}
+		}
+
+		rename("patient_appointment_records.txt", "inDeletingProcess.txt");
+		rename("tempNewRecord.txt", "patient_appointment_records.txt");
+		remove("inDeletingProcess.txt");
+
+		printf("\nPatient deleted succesfuly!\n");
+	} else {
+		printf("\nId with %s not found check spelling\n", toSearchId);
+	}
+
+	fclose(fptr);
+	fclose(fptrNewRecord);
 }
 
 // Main function
