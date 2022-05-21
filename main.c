@@ -13,11 +13,13 @@ struct Patient
 } p;
 
 
-// record Patient function
+/* record Patient function */
+
 void recordPatient()
 {
 	FILE *fptr;
 
+	// Prompt to ask for patient information
 	printf("\nEnter \n");
 
 	printf("\nNational ID: ");
@@ -35,12 +37,19 @@ void recordPatient()
 	printf("\nPhone no (ex: 25078xxxxxx): ");
 	scanf("%s", p.phone_no);
 
+	// --------------------------------------
+
+	/* Open and append new record into the file */
+
+	// Open the file
 	fptr = fopen("patient_appointment_records.txt", "a");
+
+	// Appeding into the file
 	fprintf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 
-	fclose(fptr);
+	fclose(fptr); // close the file
 
-	printf("\nPatient recorded succesfuly!\n");
+	printf("\nPatient recorded succesfuly!\n"); // Inform that the record is added.
 }
 
 // Display all patients function
@@ -48,12 +57,16 @@ void displayPatients()
 {
 	FILE *fptr;
 
-	fptr = fopen("patient_appointment_records.txt", "r");
+	fptr = fopen("patient_appointment_records.txt", "r"); // open the file in read mode
 
 	printf("\nPatients records:\n\n");
 
+	// Read the file then print the result
 	while(!feof(fptr)) {
+		// reading the file
 		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
+
+		// printing the result
 		printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 	}
 
@@ -61,40 +74,37 @@ void displayPatients()
 }
 
 // Update patient function
-
-/*
-In this function there is new functions (pName, newSex, and newAge) to store
-entered new data of the patient and we will use them to replace the ones which are
-already entered.
-
-1st we check if the name is available
-if not we pass 1 to found variable
-if the patient is available
-we we will display his datas then update them
-*/
-
 void updatePatient()
 {
 	FILE *fptr;
 	FILE *fptrUpdate;
 
-	char toSearchId[20];
-	int found = 0;
+	char toSearchId[20]; // to store an id to update
+	int found = 0; // this var will get 1 if the id is found otherwise it will stay as zero
 
+	// Ask for patient id
 	printf("\nEnter patient\n");
 	printf("National ID: ");
 	scanf("%s", toSearchId);
+	// ---------------
 
-	printf("\nSearching patient with national ID: %s ...", toSearchId);
+	printf("\nSearching patient with national ID: %s ...", toSearchId); // show the entered Id
 
-	fptr = fopen("patient_appointment_records.txt", "r");
-	fptrUpdate = fopen("temp.txt", "a");
+	fptr = fopen("patient_appointment_records.txt", "r"); // open main file
+	fptrUpdate = fopen("temp.txt", "a"); // open temporary file to store an updated infos.
 
 	while(!feof(fptr)) {
+		// scan the main file
 		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 
+		/*
+		check if the entered id to update match with any in the file
+		if yes inform that the Id is available
+		and ask for new infos for that patient
+		*/
 		if(strcmp(p.Id, toSearchId) == 0) {
-			found = 1;
+			found = 1;// if available pass one to found variable
+
 			printf("\n\nPatient found!\n\n");
 			printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 			printf("\nEnter new:\n");
@@ -114,17 +124,19 @@ void updatePatient()
 			printf("\nPhone no (ex: 25078xxxxxx): ");
 			scanf("%s", p.phone_no);
 		}
-		// adding new data in the temporary file
+		// adding the updated infos in the temporary file
 		fprintf(fptrUpdate, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 	}
 
+	// close main and temporary file
 	fclose(fptr);
 	fclose(fptrUpdate);
 
+	/* if the Id have been found */
 	if(found == 1) {
 		/*
 			open again temporary file and main file
-			to copy from temporary file to the main patients family
+			to copy from temporary file to the main patients file
 		*/
 		fptrUpdate = fopen("temp.txt", "r");
 		fptr = fopen("patient_appointment_records.txt", "w");
@@ -143,8 +155,11 @@ void updatePatient()
 	} else {
 		printf("\nId with %s not found check spelling\n", toSearchId);
 	}
+
+	// after completing all the process delete the temporary file
 	remove("temp.txt");
 
+	// close again main and temporary file
 	fclose(fptr);
 	fclose(fptrUpdate);
 }
@@ -154,26 +169,31 @@ void searchPatient()
 {
 	FILE *fptr;
 
-	char toSearchId[20];
-	int found = 0;
+	char toSearchId[20]; // to store an id to update
+	int found = 0; // this var will get 1 if the id is found otherwise it will stay as zero
 
+	// Ask for patient id
 	printf("\nEnter patient\n");
 	printf("National ID: ");
 	scanf("%s", toSearchId);
+	// -----------------
 
-	printf("\nSearching patient with national ID: %s ...\n\n", toSearchId);
+	printf("\nSearching patient with national ID: %s ...\n\n", toSearchId); // show the entered Id
 
-	fptr = fopen("patient_appointment_records.txt", "r");
+	fptr = fopen("patient_appointment_records.txt", "r"); // open main file
 
 	while(!feof(fptr)) {
+		// reading the file
 		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 
+		// check if entered ID is available then print it
 		if(strcmp(p.Id, toSearchId) == 0) {
-			found = 1;
+			found = 1; // if available pass one to found variable
 			printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 		}
 	}
 
+	// if the Id not available
 	if(found == 0) {
 		printf("\nId with %s not found check spelling\n", toSearchId);
 	}
@@ -182,61 +202,77 @@ void searchPatient()
 }
 
 // Delete patient function
-// Still don't know how to delete
 void deletePatient()
 {
 	FILE *fptr;
 	FILE *fptrNewRecord;
 
-	char toSearchId[20];
-	int found = 0;
+	char toSearchId[20]; // to store an id to update
+	int found = 0; // this var will get 1 if the id is found otherwise it will stay as zero
 
+	// Ask for patient id
 	printf("\nEnter patient\n");
 	printf("National ID: ");
 	scanf("%s", toSearchId);
+	// -----------------
 
-	printf("\nSearching patient with national ID: %s ...", toSearchId);
+	printf("\nSearching patient with national ID: %s ...", toSearchId); // show the entered Id
 
-	fptr = fopen("patient_appointment_records.txt", "r");
-	fptrNewRecord = fopen("tempNewRecord.txt", "a");
+	fptr = fopen("patient_appointment_records.txt", "r"); // open main file
 
 	while(!feof(fptr)) {
+		// scan the file
 		fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 
+		// check if the entered id is available
 		if(strcmp(p.Id, toSearchId) == 0) {
-			found = 1;
+			found = 1; // if available pass one to found variable
 
-			printf("\nPatient found!\n");
+			/* inform that it is found and print all infos about it */
+
+			printf("\nPatient found!\n"); // inform that is found
+
+			// print all the infos about it
 			printf("%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
-			printf("\nDeleting patient...\n");
+
+			printf("\nDeleting patient...\n"); // simulate deletion
 		}
 	}
 
-	fclose(fptr);
-	fclose(fptrNewRecord);
+	fclose(fptr); // close the main file
+
+	/*
+		If found is 1 which mean the id have been found
+		open the main file in readmode and temporary file in append mode
+		to store updated records without the one with that Id
+	*/
 
 	if(found == 1) {
-
-		fptr = fopen("patient_appointment_records.txt", "r");
-		fptrNewRecord = fopen("tempNewRecord.txt", "a");
+		fptr = fopen("patient_appointment_records.txt", "r"); // open main file
+		fptrNewRecord = fopen("tempNewRecord.txt", "a"); // open the temporary file
 
 		while(!feof(fptr)) {
+			// scan the records
 			fscanf(fptr, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 
+			// Append each record into the temporary file if the Id is not matching with the one found.
 			if(strcmp(p.Id, toSearchId) != 0) {
 				fprintf(fptrNewRecord, "%s\t%s %s\t%s\t%s\n", p.Id, p.Fname, p.Lname, p.appointmentDate, p.phone_no);
 			}
 		}
 
-		rename("patient_appointment_records.txt", "inDeletingProcess.txt");
-		rename("tempNewRecord.txt", "patient_appointment_records.txt");
-		remove("inDeletingProcess.txt");
+		// remove the main file
+		remove("patient_appointment_records.txt");
 
-		printf("\nPatient deleted succesfuly!\n");
+		// rename the temporal file to the name of the main file
+		rename("tempNewRecord.txt", "patient_appointment_records.txt");
+
+		printf("\nPatient deleted succesfuly!\n"); // inform the deletion of the patient
 	} else {
 		printf("\nId with %s not found check spelling\n", toSearchId);
 	}
 
+	// close again the opened files
 	fclose(fptr);
 	fclose(fptrNewRecord);
 }
@@ -244,7 +280,7 @@ void deletePatient()
 // Main function
 int main()
 {
-	int c;
+	int c; // to store choice type
 	c = 0;
 
 	printf("\n========================================");
@@ -255,6 +291,8 @@ int main()
 	{
 		printf("\nEnter:\n[1]. Record\n[2]. Display\n[3]. Update\n[4]. Search\n[5]. Delete\n[0]. Exit\n: > ");
 		scanf("%d", &c);
+
+		/* Switch between choices and call the function based on the choice */
 		switch(c)
 		{
 			case 1:
